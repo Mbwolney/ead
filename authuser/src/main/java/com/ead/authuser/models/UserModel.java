@@ -17,7 +17,7 @@ import java.util.UUID;
 @JsonInclude(JsonInclude.Include.NON_NULL) //Ele vai ocultar os campos não preenchidos
 @Entity
 @Table(name = "TB_USERS")
-public class UserModel implements Serializable {
+public class   UserModel implements Serializable {
     //Identificação da classe model
     private static final long serialVersionUID = 1l;
 
