@@ -1,12 +1,16 @@
 package com.ead.authuser.controllers;
 
+import com.ead.authuser.dtos.UserDto;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.service.UserService;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -28,7 +32,7 @@ public class UserController {
     public ResponseEntity<Object> getOneUser(@PathVariable(value = "userId") UUID userId){
         Optional<UserModel> userModelOptional = userService.findById(userId);
 
-        if(!userModelOptional.isPresent()){
+        if(!userModelOptional.isPresent()){ //Verifica se o usuário existe
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         } else {
             return ResponseEntity.status(HttpStatus.OK).body(userModelOptional.get());
@@ -39,12 +43,68 @@ public class UserController {
     public ResponseEntity<Object> deleteUser(@PathVariable(value = "userId") UUID userId){
         Optional<UserModel> userModelOptional = userService.findById(userId);
 
-        if(!userModelOptional.isPresent()){
+        if(!userModelOptional.isPresent()){ //Verifica se o usuário existe
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
         } else {
             userService.delete(userModelOptional.get());
         }
 
         return ResponseEntity.status(HttpStatus.OK).body("User deleted success");
+    }
+
+    // Atualizar usuário
+    @PutMapping("/{userId}")
+    public ResponseEntity<Object> updateUser(@PathVariable(value = "userId") UUID userId,
+                                             @RequestBody @JsonView(UserDto.UserView.UserPut.class) UserDto userDto){
+        Optional<UserModel> userModelOptional = userService.findById(userId);
+
+        if(!userModelOptional.isPresent()){ //Verifica se o usuário existe
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        } else {
+            var userModel = userModelOptional.get();
+            userModel.setFullname(userDto.getFullname());
+            userModel.setPhoneNumber(userDto.getPhoneNumber());
+            userModel.setCpf(userDto.getCpf());
+            userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+            userService.save(userModel);
+            return ResponseEntity.status(HttpStatus.OK).body(userModel);
+        }
+    }
+
+    // Atualizar senha
+    @PutMapping("/{userId}/password")
+    public ResponseEntity<Object> updatePassword (@PathVariable(value = "userId") UUID userId,
+                                                  @RequestBody @JsonView(UserDto.UserView.PasswordPut.class) UserDto userDto) {
+        Optional<UserModel> userModelOptional = userService.findById(userId);
+
+        if (!userModelOptional.isPresent()) { //Verifica se o usuário existe
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
+        if (!userModelOptional.get().getPassword().equals(userDto.getOldPassword())) { //Verificar se a senha antiga é igual a senha atual
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Error: Mismatched old password!");
+        } else {
+            var userModel = userModelOptional.get();
+            userModel.setPassword(userDto.getPassword());
+            userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+            userService.save(userModel);
+            return ResponseEntity.status(HttpStatus.OK).body("Password updated successfully.");
+        }
+    }
+
+    // Atualizar ImageUrl
+    @PutMapping("/{userId}/image")
+    public ResponseEntity<Object> updateImage (@PathVariable(value = "userId") UUID userId,
+                                               @RequestBody @JsonView(UserDto.UserView.ImagePut.class) UserDto userDto) {
+        Optional<UserModel> userModelOptional = userService.findById(userId);
+
+        if (!userModelOptional.isPresent()) { //Verifica se o usuário existe
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        } else {
+            var userModel = userModelOptional.get();
+            userModel.setImageUrl(userDto.getImageUrl());
+            userModel.setLastUpdateDate(LocalDateTime.now(ZoneId.of("UTC")));
+            userService.save(userModel);
+            return ResponseEntity.status(HttpStatus.OK).body(userModel);
+        }
     }
 }
