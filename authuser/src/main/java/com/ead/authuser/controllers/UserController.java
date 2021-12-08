@@ -3,6 +3,7 @@ package com.ead.authuser.controllers;
 import com.ead.authuser.dtos.UserDto;
 import com.ead.authuser.models.UserModel;
 import com.ead.authuser.service.UserService;
+import com.ead.authuser.specifications.SpecificationTemplate;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,10 +29,12 @@ public class UserController {
     @Autowired
     UserService userService;
 
+    // Consulta todos os usuários, passando O filtro(Specification) e a Paginação
     @GetMapping
-    public ResponseEntity<Page<UserModel>> getAllUsers(@PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) // Paginação (page = 0 -> Pagina zero / sort = 10 -> É quant. de elem. por pagina / userId do menor id para o maior)
+    public ResponseEntity<Page<UserModel>> getAllUsers( SpecificationTemplate.UserSpec spec,
+                                                        @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) // Paginação (page = 0 -> Pagina zero / sort = 10 -> É quant. de elem. por pagina / userId do menor id para o maior)
                                                                    Pageable pageable){
-        Page<UserModel> userModelPage = userService.findAll(pageable);
+        Page<UserModel> userModelPage = userService.findAll(spec, pageable);
         return ResponseEntity.status(HttpStatus.OK).body(userModelPage);
     }
 
