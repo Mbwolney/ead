@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -54,6 +56,7 @@ public class CourseModel implements Serializable {
     private UUID userInstructor;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Definir o tipo de acesso tanto na Serialização ou Deserialização // Não vai mostrar esse campo, só vai mostrar quando tiver uma  Deserialização(Atualização)
-    @OneToMany(mappedBy = "course")
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY) // Carregamento lento dos dados
+    @Fetch(FetchMode.SUBSELECT) // Vai fazer select no course e depois nos modules
     private Set<ModuleModel> modules; // O SET Não é ordenado, mas não permite duplicata
 }
