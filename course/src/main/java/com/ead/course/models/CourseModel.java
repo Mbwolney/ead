@@ -8,6 +8,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -56,7 +58,9 @@ public class CourseModel implements Serializable {
     private UUID userInstructor;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Definir o tipo de acesso tanto na Serialização ou Deserialização // Não vai mostrar esse campo, só vai mostrar quando tiver uma  Deserialização(Atualização)
-    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY) // Carregamento lento dos dados
+//    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true) // Lazy -> Carregamento lento dos dados // Responsabilidade do JPA: Cascade -> vai deletar todos so curso delegado a ele em formato cascata // OrphanRemoval -> Se não tiver um curso vinculado ele também vai ser deletado
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT) // Vai fazer select no course e depois nos modules
+//    @OnDelete(action = OnDeleteAction.CASCADE) // O Banco de Dados vai ter responsabilidade de deletar, mas não tem o controle dessa deleção
     private Set<ModuleModel> modules; // O SET Não é ordenado, mas não permite duplicata
 }
