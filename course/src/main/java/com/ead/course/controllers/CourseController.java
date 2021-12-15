@@ -41,7 +41,7 @@ public class CourseController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course Not Found.");
         }
         courseService.delete(courseModelOptional.get());
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Course deleted successfully.");
+        return ResponseEntity.status(HttpStatus.OK).body("Course deleted successfully.");
     }
 
     @PutMapping("/{courseId}")
