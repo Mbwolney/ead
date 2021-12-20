@@ -1,6 +1,5 @@
 package com.ead.course.controllers;
 
-import com.ead.course.dtos.CourseDto;
 import com.ead.course.dtos.ModuleDto;
 import com.ead.course.models.CourseModel;
 import com.ead.course.models.ModuleModel;
@@ -70,7 +69,7 @@ public class ModuleController {
         return ResponseEntity.status(HttpStatus.OK).body(moduleService.save(moduleModel));
     }
 
-    @GetMapping("/courses/{courseId}/modules/")
+    @GetMapping("/courses/{courseId}/modules")
     public ResponseEntity<List<ModuleModel>> getAllModules (@PathVariable(value = "courseId") UUID courseId){
         return ResponseEntity.status(HttpStatus.OK).body(moduleService.findAllByCourse(courseId));
     }
