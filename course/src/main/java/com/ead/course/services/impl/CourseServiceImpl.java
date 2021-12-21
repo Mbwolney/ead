@@ -32,7 +32,7 @@ public class CourseServiceImpl implements CourseService {
     public void delete(CourseModel courseModel) {
         List<ModuleModel> moduleModelList = moduleRepository.findAllLModulesInToCourse(courseModel.getCourseId());
 
-        if(moduleModelList.isEmpty()){
+        if(!moduleModelList.isEmpty()){
             for(ModuleModel module : moduleModelList){
                 List<LessonModel> lessonModelList = lessonRepository.findAllLessonsInToModule(module.getModuleId());
                 if(!lessonModelList.isEmpty()){

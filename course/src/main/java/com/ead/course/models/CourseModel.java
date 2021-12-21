@@ -57,10 +57,10 @@ public class CourseModel implements Serializable {
     @Column(nullable = false)
     private UUID userInstructor;
 
+    //    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true) // Lazy -> Carregamento lento dos dados // Responsabilidade do JPA de deletar: Cascade -> vai deletar todos so curso delegado a ele em formato cascata // OrphanRemoval -> Se não tiver um curso vinculado ele também vai ser deletado
+    //    @OnDelete(action = OnDeleteAction.CASCADE) // O Banco de Dados vai ter responsabilidade de deletar, mas não tem o controle dessa deleção
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // Definir o tipo de acesso tanto na Serialização ou Deserialização // Não vai mostrar esse campo, só vai mostrar quando tiver uma  Deserialização(Atualização)
-//    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true) // Lazy -> Carregamento lento dos dados // Responsabilidade do JPA: Cascade -> vai deletar todos so curso delegado a ele em formato cascata // OrphanRemoval -> Se não tiver um curso vinculado ele também vai ser deletado
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT) // Vai fazer select no course e depois nos modules
-//    @OnDelete(action = OnDeleteAction.CASCADE) // O Banco de Dados vai ter responsabilidade de deletar, mas não tem o controle dessa deleção
     private Set<ModuleModel> modules; // O SET Não é ordenado, mas não permite duplicata
 }
