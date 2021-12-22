@@ -64,4 +64,8 @@ public class CourseModel implements Serializable {
     @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
     @Fetch(FetchMode.SUBSELECT) // Vai fazer select no course e depois nos modules
     private Set<ModuleModel> modules; // O SET Não é ordenado, mas não permite duplicata
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @OneToMany(mappedBy = "course", fetch = FetchType.LAZY)
+    private Set<CourseUserModel> courseUser;
 }
