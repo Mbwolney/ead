@@ -37,8 +37,15 @@ public class UserController {
     @GetMapping
     public ResponseEntity<Page<UserModel>> getAllUsers( SpecificationTemplate.UserSpec spec,
                                                         @PageableDefault(page = 0, size = 10, sort = "userId", direction = Sort.Direction.ASC) // Paginação (page = 0 -> Pagina zero / sort = 10 -> É quant. de elem. por pagina / userId do menor id para o maior)
-                                                                   Pageable pageable){
-        Page<UserModel> userModelPage = userService.findAll(spec, pageable);
+                                                                   Pageable pageable,
+                                                        @RequestParam(required = false) UUID courseId){
+        Page<UserModel> userModelPage = null;
+        if(courseId != null){
+            userModelPage = userService.findAll(SpecificationTemplate.userCourseId(courseId).and(spec), pageable);
+        } else {
+            userModelPage = userService.findAll(spec, pageable);
+        }
+
         if(!userModelPage.isEmpty()){ // Se o userModelPage não for vazio, vai fazer a validação
             for(UserModel user : userModelPage.toList()){ // Acessar os elementos de cada um nesta lista
                 user.add(linkTo(methodOn(UserController.class).getOneUser(user.getUserId())).withSelfRel()); // LinkTo -> defina a classe e o metodo, passando o ID, withSeflRel ele qualifica o link para o recurso
