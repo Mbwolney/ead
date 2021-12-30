@@ -5,6 +5,7 @@ import com.ead.authuser.dtos.ResponsePageDto;
 import com.ead.authuser.service.UtilsService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -19,7 +20,7 @@ import java.util.UUID;
 
 @Log4j2
 @Component
-public class UserClient {
+public class CourseClient {
 
     @Autowired
     RestTemplate restTemplate;
@@ -27,11 +28,12 @@ public class UserClient {
     @Autowired
     UtilsService utilsService;
 
-    String REQUEST_URI = "http://localhost:8082";
+    @Value("${ead.api.url.course}") // application.yaml
+    String REQUEST_URL_COURSE;
 
     public Page<CourseDto> getAllCoursesByUsers(UUID userId, Pageable pageable){
         List<CourseDto> searchResult = null;
-        String url = utilsService.createUrl(userId, pageable);
+        String url = REQUEST_URL_COURSE + utilsService.createUrl(userId, pageable);
         log.debug("Request URL: {} ", url);
         log.info("Request URL: {} ", url);
         try{
@@ -39,7 +41,7 @@ public class UserClient {
             ResponseEntity<ResponsePageDto<CourseDto>> result = restTemplate.exchange(url, HttpMethod.GET, null, responseType);
             searchResult = result.getBody().getContent();
 
-            log.debug("Reponse Number of Elements: {} ", searchResult.size());
+            log.debug("Response Number of Elements: {} ", searchResult.size());
         } catch (Exception e){
             log.error("Error request /courses {} ", e);
         }
