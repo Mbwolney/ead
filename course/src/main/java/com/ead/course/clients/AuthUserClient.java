@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -43,7 +44,7 @@ public class AuthUserClient {
             searchResult = result.getBody().getContent();
 
             log.debug("Response Number of Elements: {} ", searchResult.size());
-        } catch (Exception e){
+        } catch (HttpStatusCodeException e){
             log.error("Error request /courses {} ", e);
         }
         log.info("Ending request /users courseId {} ", courseId);
@@ -62,5 +63,10 @@ public class AuthUserClient {
         courseUserDto.setUserId(userId);
         courseUserDto.setCourseId(courseId);
         restTemplate.postForObject(url, courseUserDto, String.class);
+    }
+
+    public void deleteCourseInAuthUser(UUID courseId){
+        String url = REQUEST_URL_AUTHUSER + "/users/courses/" + courseId;
+        restTemplate.exchange(url, HttpMethod.DELETE, null, String.class);
     }
 }
