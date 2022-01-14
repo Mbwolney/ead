@@ -36,9 +36,13 @@ public class UserCourseController {
     UserCourseService userCourseService;
 
     @GetMapping("/users/{userId}/courses")
-    public ResponseEntity<Page<CourseDto>> getAllCourseByUser(@PageableDefault(page = 0, size = 10, sort = "courseId", direction = Sort.Direction.ASC) // Paginação (page = 0 -> Pagina zero / sort = 10 -> É quant. de elem. por pagina / userId do menor id para o maior)
-                                                                 Pageable pageable,
-                                                              @PathVariable(value = "userId") UUID userId){
+    public ResponseEntity<Object> getAllCourseByUser(@PageableDefault(page = 0, size = 10, sort = "courseId", direction = Sort.Direction.ASC) // Paginação (page = 0 -> Pagina zero / sort = 10 -> É quant. de elem. por pagina / userId do menor id para o maior)
+                                                             Pageable pageable,
+                                                     @PathVariable(value = "userId") UUID userId){
+        Optional<UserModel> userModelOptional = userService.findById(userId);
+        if(!userModelOptional.isPresent()){ //Verifica se o usuário existe
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+        }
         return ResponseEntity.status(HttpStatus.OK).body(userClient.getAllCoursesByUsers(userId, pageable));
     }
 
